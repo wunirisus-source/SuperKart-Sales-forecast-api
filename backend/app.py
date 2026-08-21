@@ -1,28 +1,19 @@
 
-# Import necessary libraries
 import numpy as np
-import joblib  # For loading the serialized model
-import pandas as pd  # For data manipulation
-from flask import Flask, request, jsonify  # For creating the Flask API
+import joblib
+import pandas as pd
+from flask import Flask, request, jsonify
 
-# Initialize Flask app with a name
-superkart_api = Flask("SuperKart Sales forecast") #Complete the code to define the name of the app
+superkart_api = Flask("SuperKart Sales forecast")
+model = joblib.load("superkart_sales_forecast_model_v1_0.joblib")
 
-# Load the trained churn prediction model
-model = joblib.load("Superkart_sales_forecast_adaboost_model_v1_0.joblib") #Complete the code to define the location of the serialized model
-
-# Define a route for the home page
 @superkart_api.get('/')
 def home():
-    return "Welcome to the SuperKart Sales Forecast API!" #Complete the code to define a welcome message
+    return "Welcome to the SuperKart Sales Forecast API!"
 
-# Define an endpoint to predict churn for a single customer
 @superkart_api.post('/v1/predict')
 def predict_sales():
-    # Get JSON data from the request
     data = request.get_json()
-
-    # Extract relevant customer features from the input data. The order of the column names matters.
     sample = {
         'Product_Weight': data['Product_Weight'],
         'Product_Sugar_Content': data['Product_Sugar_Content'],
@@ -35,17 +26,9 @@ def predict_sales():
         'Store_Age_Years': data['Store_Age_Years'],
         'Product_Type_Category': data['Product_Type_Category']
     }
-
-    # Convert the extracted data into a DataFrame
     input_data = pd.DataFrame([sample])
-
-    # Make a churn prediction using the trained model
     prediction = model.predict(input_data).tolist()[0]
-
-    # Return the prediction as a JSON response
     return jsonify({'Sales': prediction})
 
-
-# Run the Flask app in debug mode
 if __name__ == '__main__':
     superkart_api.run(debug=True)
