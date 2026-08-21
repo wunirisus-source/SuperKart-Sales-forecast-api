@@ -1,11 +1,12 @@
 
 import streamlit as st
+import pandas as pd
 import requests
 
 # Base URL of the Flask backend
 BACKEND_URL = "http://backend:7860"
 
-st.title("superkart-sales-forecast") #Complete the code to define the title of the app.
+st.title("Superkart-sales-forecast App") #Complete the code to define the title of the app.
 
 # Input fields for product and store data
 Product_Weight = st.number_input("Product Weight", min_value=0.0, value=12.66)
@@ -40,6 +41,6 @@ if st.button("Predict", type="primary"):
     response = requests.post(f"{BACKEND_URL}/v1/predict", json=product_data.to_dict(orient='records')[0])  # Send data to Flask API
     if response.status_code == 200:
         prediction = response.json()['Sales Forecast (in dollars)']
-        st.success(f"Predicted Product Store Sales Total (in dollars): ₹{predicted_sales:.2f}")
+        st.success(f"Predicted Product Store Sales Total (in dollars): ₹{prediction :.2f}")
     else:
         st.error("Error in API request. Please ensure the backend Space is running.")
